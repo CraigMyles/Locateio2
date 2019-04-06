@@ -3,4 +3,29 @@
     <color name="colorPrimary">#357EC7</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+
+    <color name="Black">#0F0F0F</color>
+    <color name="White">#EBEBEB</color>
+    <color name="TrueWhite">#FFFFFF</color>
+    <color name="Grey">#444244</color>
+    <color name="Red">#CE143F</color>
+    <color name="Pink">#FB98B8</color>
+    <color name="Green">#95E637</color>
+
+
+
+    <color name="CafeDeepBlue">#24345A</color>
+    <color name="CafeSeaBlue">#279DE1</color>
+    <color name="CafeSkyBlue">#26CDCB</color>
+    <color name="CafeCloudBlue">#E7F6F6</color>
+
+
+
+
+
+
+
+
+
+
 </resources>

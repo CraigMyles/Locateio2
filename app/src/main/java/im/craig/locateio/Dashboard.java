@@ -26,6 +26,8 @@ public class Dashboard extends AppCompatActivity {
         Button logoutBtn = findViewById(R.id.btnLogout);
         Button questionBtn = findViewById(R.id.btnQuestion);
 
+        Button homeBtn = findViewById(R.id.btnHome);
+
         logoutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -46,5 +48,13 @@ public class Dashboard extends AppCompatActivity {
             }
         });
 
+        homeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                Intent i = new Intent(getApplicationContext(), HomeActivity.class);
+                startActivity(i);
+                finish();
+            }
+        });
     }
 }

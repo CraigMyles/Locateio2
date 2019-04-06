@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/colorPrimary">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="80dp"
+        android:background="@drawable/card_background"></View>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="84dp"
+        android:text="Share Your Location"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="120dp"
+        android:text="Tell us a little about where you are!"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Light.Widget.PopupMenu.Large" />
+
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/longitudeTag"
+        android:layout_width="50pt"
+        android:layout_height="32dp"
+        android:layout_below="@+id/longText"
+        android:layout_marginTop="200dp"
+        android:background="@color/White"
+        android:text="Longitude:"
+        android:textAlignment="textEnd"/>
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/longitudeValue"
+        android:layout_width="100pt"
+        android:layout_height="32dp"
+        android:layout_below="@+id/longText"
+        android:layout_marginTop="200dp"
+        android:layout_marginLeft="50pt"
+        android:background="@color/White"
+        android:text="(DISPLAY LONGITUDE VALUE)"
+        android:textAlignment="textStart"/>
+
+
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/latitudeTag"
+        android:layout_width="50pt"
+        android:layout_height="32dp"
+        android:layout_below="@+id/longText"
+        android:layout_marginTop="230dp"
+        android:background="@color/White"
+        android:text="Latitude:"
+        android:textAlignment="textEnd"/>
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/latitudeValue"
+        android:layout_width="100pt"
+        android:layout_height="32dp"
+        android:layout_below="@+id/longText"
+        android:layout_marginTop="230dp"
+        android:layout_marginLeft="50pt"
+        android:background="@color/White"
+        android:text="(DISPLAY LATITUDE VALUE)"
+        android:textAlignment="textStart"/>
+
+
+
+
+
+</FrameLayout>
