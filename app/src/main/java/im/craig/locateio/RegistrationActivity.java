@@ -92,9 +92,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
     }
 
-    /**
-     * Display Progress bar while registering
-     */
+    //display progress when registering account
     private void displayLoader() {
         pDialog = new ProgressDialog(RegistrationActivity.this);
         pDialog.setMessage("Signing Up.. Please wait...");
@@ -105,7 +103,7 @@ public class RegistrationActivity extends AppCompatActivity {
     }
 
 
-     //Launch Dashboard Activity on Successful Sign Up
+     //Launch Dashboard Activity on success
     private void loadDashboard() {
         Intent i = new Intent(getApplicationContext(), Dashboard.class);
         startActivity(i);
@@ -119,7 +117,7 @@ public class RegistrationActivity extends AppCompatActivity {
         displayLoader();
         JSONObject request = new JSONObject();
         try {
-            //Populate the request parameters
+            //populate request params
             request.put(KEY_USERNAME, username);
             request.put(KEY_PASSWORD, password);
             request.put(KEY_FNAME, fName);
@@ -138,17 +136,17 @@ public class RegistrationActivity extends AppCompatActivity {
                         try {
                             //Check if user got registered successfully
                             if (response.getInt(KEY_STATUS) == 0) {
-                                //Set the user session
+                                //Create a session for the user
                                 session.loginUser(username,fName);
                                 loadDashboard();
 
                             }else if(response.getInt(KEY_STATUS) == 1){
-                                //Display error message if username is already existsing
+                                //if error 1, user is taken and display message
                                 usernameInput.setError("Username already taken!");
                                 usernameInput.requestFocus();
 
                             }else if(response.getInt(KEY_STATUS) == 2){
-                                //Display error message if username is already existsing
+                                //display if error message 2 missing user input
                                 usernameInput.setError("Key parameters missing!");
                                 usernameInput.requestFocus();
 
@@ -167,19 +165,20 @@ public class RegistrationActivity extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         pDialog.dismiss();
 
-                        //Display error message whenever an error occurs
+                        //display error message
                         Toast.makeText(getApplicationContext(),
                                 error.getMessage(), Toast.LENGTH_SHORT).show();
 
                     }
                 });
 
-        // Access the RequestQueue through your singleton class.
+        //get request queue from singleton
         MySingleton.getInstance(this).addToRequestQueue(jsArrayRequest);
     }
 
 
-    //Validates inputs and shows error if any
+    //Validates inputs and/or shows errors
+    //if errors lie, set focus on related form input
     private boolean validateInputs() {
         if (KEY_EMPTY.equals(fName)) {
             fNameInput.setError("First name cannot be empty");
@@ -218,38 +217,3 @@ public class RegistrationActivity extends AppCompatActivity {
         return true;
     }
 }
-
-
-
-
-
-
-//        Button registerButton = (Button)findViewById(R.id.registerButton);
-//
-//        Button goBack = (Button)findViewById(R.id.goBack);
-//
-//        goBack.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//
-//            public void onClick(View v) {
-//
-//                Intent intent = new Intent(RegistrationActivity.this, MainActivity.class);
-//
-//                startActivity(intent);
-//
-//            }
-//
-//        });
-//    }
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//}

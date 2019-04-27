@@ -20,10 +20,14 @@ public abstract class BaseFragment extends Fragment {
         mRoot = inflater.inflate(getLayoutResId(), container, false);
         inOnCreateView(mRoot, container, savedInstanceState);
         return mRoot;
+
+
     }
 
     @LayoutRes
     public abstract int getLayoutResId();
+
+
 
     public abstract void inOnCreateView(View root, @LayoutRes ViewGroup container, @Nullable Bundle savedInstanceState);
 }

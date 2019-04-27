@@ -38,8 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //ActionBar actionBar = getSupportActionBar();
-        //actionBar.hide();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -56,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         Button register = findViewById(R.id.registerButton);
         Button login = findViewById(R.id.loginButton);
 
-        //Launch Registration screen when Register Button is clicked
+        //load register activity on req.
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -69,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Retrieve the data entered in the edit texts
+                //get user input
                 username = usernameInput.getText().toString().toLowerCase().trim();
                 password = passwordInput.getText().toString().trim();
                 if (validateInputs()) {
@@ -79,9 +78,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Launch Dashboard Activity on Successful Login
-     */
+    //login success, load next page
     private void loadDashboard() {
         Intent i = new Intent(getApplicationContext(), Dashboard.class);
         startActivity(i);
@@ -89,10 +86,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    /**
-     * Display Progress bar while Logging in
-     */
 
+    //progress bar for login
     private void displayLoader() {
         pDialog = new ProgressDialog(MainActivity.this);
         pDialog.setMessage("Logging In.. Please wait...");
@@ -106,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         displayLoader();
         JSONObject request = new JSONObject();
         try {
-            //Populate the request parameters
+            //input key parameters for external php json database query
             request.put(KEY_USERNAME, username);
             request.put(KEY_PASSWORD, password);
 
@@ -119,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         pDialog.dismiss();
                         try {
-                            //Check if user got logged in successfully
+                            //check if successful response
 
                             if (response.getInt(KEY_STATUS) == 0) {
                                 session.loginUser(username,response.getString(KEY_FIRST_NAME));
@@ -147,14 +142,11 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-        // Access the RequestQueue through your singleton class.
+        // access singleton's request queue method
         MySingleton.getInstance(this).addToRequestQueue(jsArrayRequest);
     }
 
-    /**
-     * Validates inputs and shows error if any
-     * @return
-     */
+    //validate inputs
     private boolean validateInputs() {
         if(KEY_EMPTY.equals(username)){
             usernameInput.setError("Username cannot be empty");
@@ -169,66 +161,4 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 }
-
-
-
-//        username = (EditText)findViewById(R.id.username);
-//
-//        password = (EditText)findViewById(R.id.username);
-//
-//        Button loginButton = (Button)findViewById(R.id.loginButton);
-//
-//        Button registerButton = (Button)findViewById(R.id.registerButton);
-//
-//
-//
-//
-//
-//        loginButton.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//
-//            public void onClick(View v) {
-//
-//                usernameInput = username.getText().toString();
-//                String passwordInput = username.getText().toString();
-//
-//                if(usernameInput.equals("") || passwordInput.equals("")){
-//
-//                    Toast.makeText(MainActivity.this, "Username or password must be filled", Toast.LENGTH_LONG).show();
-//
-//                    return;
-//
-//                }
-//
-//                if(usernameInput.length() <= 1 || passwordInput.length() <= 1){
-//
-//                    Toast.makeText(MainActivity.this, "Username or password length must be greater than one", Toast.LENGTH_LONG).show();
-//
-//                    return;
-//
-//                }
-//
-//
-//
-//            }
-//
-//        });
-//
-//        registerButton.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//
-//            public void onClick(View v) {
-//
-//                Intent intent = new Intent(MainActivity.this, RegistrationActivity.class);
-//
-//                startActivity(intent);
-//
-//            }
-//
-//        });
-//
-//    }
-//}
 

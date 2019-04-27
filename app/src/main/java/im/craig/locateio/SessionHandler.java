@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import java.util.Date;
 
+//class for hoding details on the login session
 public class SessionHandler {
     private static final String PREF_NAME = "UserSession";
     private static final String KEY_USERNAME = "username";
@@ -21,12 +22,7 @@ public class SessionHandler {
         this.mEditor = mPreferences.edit();
     }
 
-    /**
-     * Logs in the user by saving user details and setting session
-     *
-     * @param username
-     * @param fullName
-     */
+
     public void loginUser(String username, String fullName) {
         mEditor.putString(KEY_USERNAME, username);
         mEditor.putString(KEY_FULL_NAME, fullName);
@@ -38,11 +34,7 @@ public class SessionHandler {
         mEditor.commit();
     }
 
-    /**
-     * Checks whether user is logged in
-     *
-     * @return
-     */
+    //return if user is logged in
     public boolean isLoggedIn() {
         Date currentDate = new Date();
 
@@ -62,11 +54,7 @@ public class SessionHandler {
         return currentDate.before(expiryDate);
     }
 
-    /**
-     * Fetches and returns user details
-     *
-     * @return user details
-     */
+    //get user details
     public User getUserDetails() {
         //Check if user is logged in first
         if (!isLoggedIn()) {
@@ -80,9 +68,7 @@ public class SessionHandler {
         return user;
     }
 
-    /**
-     * Logs out user by clearing the session
-     */
+    //clears all logged data
     public void logoutUser(){
         mEditor.clear();
         mEditor.commit();

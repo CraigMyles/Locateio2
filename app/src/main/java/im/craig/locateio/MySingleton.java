@@ -11,11 +11,14 @@ public class MySingleton {
     private RequestQueue mRequestQueue;
     private static Context mCtx;
 
+    //declare vars context and request queue
     private MySingleton(Context context) {
+
         mCtx = context;
         mRequestQueue = getRequestQueue();
     }
 
+    //create instance of singleton from external
     public static synchronized MySingleton getInstance(Context context) {
         if (mInstance == null) {
             mInstance = new MySingleton(context);
@@ -23,6 +26,7 @@ public class MySingleton {
         return mInstance;
     }
 
+    //create request with volley and run on the url of php page
     private RequestQueue getRequestQueue() {
         if (mRequestQueue == null) {
             // getApplicationContext() is key, it keeps you from leaking the
@@ -31,7 +35,7 @@ public class MySingleton {
         }
         return mRequestQueue;
     }
-
+    //add to queue when called
     public <T> void addToRequestQueue(Request<T> req) {
         getRequestQueue().add(req);
     }

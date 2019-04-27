@@ -19,7 +19,7 @@
         android:layout_marginTop="100dp"
         android:layout_marginBottom="50dp"
         android:background="@color/White"
-        android:text="Latatude:"
+        android:text="This Page Will Contain"
         android:textAlignment="center"/>
 
 
@@ -28,7 +28,7 @@
         android:layout_width="match_parent"
         android:layout_height="32dp"
         android:background="@color/White"
-        android:text="Longatude:"
+        android:text="A Feed of Locations"
         android:layout_marginTop="150dp"
         android:textAlignment="center"/>
 

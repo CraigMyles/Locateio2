@@ -21,6 +21,7 @@ public class Dashboard extends AppCompatActivity {
 
         TextView welcomeText = findViewById(R.id.welcomeText);
 
+
         welcomeText.setText("Welcome "+user.getFName()+", your session will expire on "+user.getSessionExpiryDate());
 
         Button logoutBtn = findViewById(R.id.btnLogout);

@@ -43,13 +43,13 @@
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/longitudeValue"
-        android:layout_width="100pt"
+        android:layout_width="match_parent"
         android:layout_height="32dp"
         android:layout_below="@+id/longText"
         android:layout_marginTop="200dp"
         android:layout_marginLeft="50pt"
         android:background="@color/White"
-        android:text="(DISPLAY LONGITUDE VALUE)"
+        android:text="Loading..."
         android:textAlignment="textStart"/>
 
 
@@ -66,14 +66,24 @@
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/latitudeValue"
-        android:layout_width="100pt"
+        android:layout_width="match_parent"
         android:layout_height="32dp"
         android:layout_below="@+id/longText"
         android:layout_marginTop="230dp"
         android:layout_marginLeft="50pt"
         android:background="@color/White"
-        android:text="(DISPLAY LATITUDE VALUE)"
+        android:text="Loading..."
         android:textAlignment="textStart"/>
+
+    <Button
+        android:layout_width="100dp"
+        android:layout_height="75dp"
+        android:text="Get Current Location"
+        android:layout_marginTop="500dp"
+        android:layout_marginLeft="150dp"
+        android:background="#FFFFFF"
+        android:padding="10dp"
+        android:id="@+id/getLocationBtn"/>
 
 
 
