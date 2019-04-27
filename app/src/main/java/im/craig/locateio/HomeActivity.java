@@ -2,6 +2,7 @@ package im.craig.locateio;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -23,41 +24,74 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 import java.util.Locale;
 
 import im.craig.locateio.adapter.MainPagerAdapter;
 
+import static android.accounts.AccountManager.KEY_PASSWORD;
+
 public class HomeActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
+    private SessionHandler session;
+    private ProgressDialog pDialog;
     GoogleApiClient mGoogleApiClient;
     LocationManager mLocationManager;
     TextView tv1;
     TextView tv2;
-//    TextView latitudeValue;
-//    TextView longitudeValue;
+
+    Double globalLong;
+    Double globalLat;
 
 
-    //    mLastLocation mLastLocation;
+
+    private static final String KEY_STATUS = "status";
+    private static final String KEY_MESSAGE = "message";
+    private static final String KEY_USERNAME = "username";
+    private static final String KEY_LONGITUDE = "longitude";
+    private static final String KEY_LATITUDE = "latitude";
+    private static final String KEY_TITLE = "title";
+    private static final String KEY_DESCRIPTION = "description";
+    private static final String KEY_EMPTY = "";
+    private String username;
+    private String stringLongitude;
+    private String stringLatitude;
+    private String locationTitle;
+    private String locationDesc;
+    private EditText locationTitleInput;
+    private EditText locationDescInput;
+
+
+
+
+
     Location mLastLocation;
-    //TextView latitudeValue = (TextView) findViewById(R.id.latitudeValue);
-    //TextView longitudeValue = (TextView) findViewById(R.id.longitudeValue);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        session = new SessionHandler(getApplicationContext());
+        final User user = session.getUserDetails();
 
-        //tv1.setText("TESTING");
-        //longitudeValue.setText("testing 2");
+
 
         final View background = findViewById(R.id.home_background_view);
         final ViewPager viewPager = (ViewPager) findViewById(R.id.home_view_pager);
@@ -71,79 +105,34 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
         TabLayout tabLayout = (TabLayout) findViewById(R.id.am_tab_layout);
         tabLayout.setupWithViewPager(viewPager);
 
+
+
+
         viewPager.setCurrentItem(1);
 
 
-//        if (ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//
-//            ActivityCompat.requestPermissions(HomeActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
-//
-//        }
-//        if (ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-//            //If you have permission;
-//            if (mGoogleApiClient == null) {
-//                mGoogleApiClient = new GoogleApiClient.Builder(HomeActivity.this)
-//                        .addConnectionCallbacks(HomeActivity.this)
-//                        .addOnConnectionFailedListener(HomeActivity.this)
-//                        .addApi(LocationServices.API)
-//                        .build();
-//            }
-//            mLocationManager = (LocationManager)
-//                    getSystemService(LOCATION_SERVICE);
-//
-//
-//            Criteria criteria = new Criteria();
-//            criteria.setAccuracy(Criteria.ACCURACY_FINE);
-//            criteria.setAltitudeRequired(true);
-//            criteria.setBearingRequired(true);
-//            criteria.setCostAllowed(true);
-//            criteria.setPowerRequirement(Criteria.POWER_LOW);
-//            String provider = mLocationManager.getBestProvider(criteria, true);
-//
-//            if(mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) && mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
-//                mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, this);
-//
-//            Location lastLocale = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-//            //if(lastLocale != null)
-//                //onLocationChanged(lastLocale);
-//
-//        }
+
+
 
             viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                //if on middle screen
-                if (position == 0)
-                {
-                    background.setBackgroundColor(colourBlue);
-                    //background.setAlpha(1-positionOffset);
-//
-//                    TextView latitudeValue = (TextView) findViewById(R.id.latitudeValue);
-//                    TextView longitudeValue = (TextView) findViewById(R.id.longitudeValue);
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
+                    //if on first screen
+                    if (position == 0)
+                    {
+                        background.setBackgroundColor(colourBlue);
+                        //background.setAlpha(1-positionOffset);
+                    }
 
-                    //tv1.setText("testing");
-
-
-
-
-                    Button getLocationBtn = (Button) findViewById(R.id.getLocationBtn);
-
-
-
-
-
-
-
-                }
-
-
-
-                    //if on middle screen
+                    //if on mid screen
                     else if (position == 1) {
                         background.setBackgroundColor(colourPink);
                         //background.setAlpha(positionOffset);
-                    } else if (position == 2) {
+                    }
+
+                    //if on last screen
+                    else if (position == 2) {
                         background.setBackgroundColor(colourGreen);
                         //background.setAlpha(1+positionOffset);
                     }
@@ -156,12 +145,12 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
             public void onPageSelected(int position) {
                 if(position == 0)
                 {
-                    if (ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-                        ActivityCompat.requestPermissions(HomeActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
+                        ActivityCompat.requestPermissions(HomeActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
 
                     }
-                    if (ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                         //If you have permission;
                         if (mGoogleApiClient == null) {
                             mGoogleApiClient = new GoogleApiClient.Builder(HomeActivity.this)
@@ -195,20 +184,131 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
 
+                    final EditText locationTitleInput = findViewById(R.id.locationTitleInput);
+                    final EditText locationDescriptionInput = findViewById(R.id.locationDescInput);
+
+                    final RatingBar ratingBar = findViewById(R.id.ratingBar);
+
+
+                    Button shareLocationBtn = (Button) findViewById(R.id.shareLocationBtn);
+
+                    shareLocationBtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+l                            //Retrieve the data entered in the edit texts
+//                            username = usernameInput.getText().toString().toLowerCase().trim();
+//                            password = passwordInput.getText().toString().trim();
+//                            confirmPassword = passwordConfirm.getText().toString().trim();
+//                            fName = fNameInput.getText().toString().trim();
+//                            lName = lNameInput.getText().toString().trim();
+//                            email = emailInput.getText().toString().trim();
+
+
+                            String localLong = Double.toString(globalLong);
+                            String localLat = Double.toString(globalLat);
+
+                            username = user.getUsername();
+                            stringLongitude = Double.toString(globalLong);
+                            stringLatitude = Double.toString(globalLat);
+                            locationTitle = locationTitleInput.getText().toString();
+                            locationDesc = locationDescInput.getText().toString();
+
+
+
+
+
+
+
+//                            private String username;
+//                            private String stringLongitude;
+//                            private String stringLatitude;
+//                            private String locationTitle;
+//                            private String locationDesc;
+
+
+
+//                            Toast.makeText(HomeActivity.this,
+//                                    "Longitude = "+localLong+" Lat = "+localLat , Toast.LENGTH_LONG).show();
+                            Toast.makeText(HomeActivity.this,
+                                    "test" , Toast.LENGTH_LONG).show();
+
+                            //displayLoader();
+
+
+
+
+//                            JSONObject request = new JSONObject();
+//                            try {
+//                                //input key parameters for external php json database query
+//                                request.put(KEY_USERNAME, username);
+//                                request.put(KEY_LONGITUDE, stringLongitude);
+//                                request.put(KEY_LATITUDE, stringLatitude);
+//                                request.put(KEY_TITLE, locationTitle);
+//                                request.put(KEY_DESCRIPTION, locationDesc);
+//
+//                            } catch (JSONException e) {
+//                                e.printStackTrace();
+//                            }
+//                            JsonObjectRequest jsArrayRequest = new JsonObjectRequest
+//                                    (Request.Method.POST, login_url, request, new Response.Listener<JSONObject>() {
+//                                        @Override
+//                                        public void onResponse(JSONObject response) {
+//                                            pDialog.dismiss();
+//                                            try {
+//                                                //check if successful response
+//
+//                                                if (response.getInt(KEY_STATUS) == 0) {
+//                                                    session.loginUser(username,response.getString(KEY_FIRST_NAME));
+//                                                    loadDashboard();
+//
+//                                                }else{
+//                                                    Toast.makeText(getApplicationContext(),
+//                                                            response.getString(KEY_MESSAGE), Toast.LENGTH_SHORT).show();
+//
+//                                                }
+//                                            } catch (JSONException e) {
+//                                                e.printStackTrace();
+//                                            }
+//                                        }
+//                                    }, new Response.ErrorListener() {
+//
+//                                        @Override
+//                                        public void onErrorResponse(VolleyError error) {
+//                                            pDialog.dismiss();
+//
+//                                            //Display error message whenever an error occurs
+//                                            Toast.makeText(getApplicationContext(),
+//                                                    error.getMessage(), Toast.LENGTH_SHORT).show();
+//
+//                                        }
+//                                    });
+//
+//                            // access singleton's request queue method
+//                            MySingleton.getInstance(this).addToRequestQueue(jsArrayRequest);
+
+
+
+                            /*if (validateInputs()) {
+                                registerUser();
+                            }*/
+
+                        }
+                    });
+
+
+
+
+
                     if(tv1 == null)
                         tv1 = (TextView)findViewById(R.id.longitudeValue);
+                        tv1.setText(Double.toString(globalLong));
 
                     if(tv2 == null)
                         tv2 = (TextView)findViewById(R.id.latitudeValue);
+                        tv2.setText(Double.toString(globalLat));
 
-//                    Button getLocationBtn = (Button) findViewById(R.id.getLocationBtn);
-//                    getLocationBtn.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View v) {
-//                            viewPager.setCurrentItem(1);
-//                             viewPager.setCurrentItem(0);
-//                        }
-//                    });
+
+
+
                 }
             }
 
@@ -240,6 +340,8 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
     protected void onStart() {
         //mGoogleApiClient.connect();
         super.onStart();
+
+
     }
 
     @Override
@@ -254,24 +356,13 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
         double currentLatitude = location.getLatitude();
         double currentLongitude = location.getLongitude();
 
-//        String currentLatitudeString = Double.toString(currentLatitude);
-//        String currentLongitudeString = Double.toString(currentLongitude);
+        globalLat = location.getLatitude();
+        globalLong = location.getLongitude();
 
         Log.d("Location","Longitude = "+currentLongitude);
         Log.d("Location","Latitude = "+currentLatitude);
 
-//        Log.d("Location","Longitude String = "+currentLatitudeString);
-//        Log.d("Location", "Latitude String = "+currentLongitudeString);
 
-
-//        latitudeValue.setText(Double.toString(location.getLatitude()));
-//        longitudeValue.setText(Double.toString(location.getLongitude()));
-
-//        latitudeValue.setText(Double.toString(currentLatitude));
-//        longitudeValue.setText(Double.toString(currentLongitude));
-
-        //tv1.setText(Double.toString(currentLatitude));
-        //tv2.setText(Double.toString(currentLongitude));
 
         if(tv1 != null)
             tv1.setText(Double.toString(currentLatitude));
@@ -280,7 +371,6 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
         if(tv2 != null)
             tv2.setText(Double.toString(currentLongitude));
 
-        //Toast.makeText(this, "Location Known", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -295,6 +385,15 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     public void onProviderDisabled(String provider) {
+
+    }
+    //progress bar for login
+    private void displayLoader() {
+        pDialog = new ProgressDialog(HomeActivity.this);
+        pDialog.setMessage("Posting.. Please wait...");
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(false);
+        pDialog.show();
 
     }
 }
