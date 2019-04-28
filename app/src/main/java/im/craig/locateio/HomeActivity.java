@@ -40,6 +40,7 @@ import com.google.android.gms.location.LocationServices;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
@@ -60,26 +61,24 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
     Double globalLat;
 
 
-
+    private String api_url = "https://craig.im/locateio/shareLocation.php";
     private static final String KEY_STATUS = "status";
     private static final String KEY_MESSAGE = "message";
     private static final String KEY_USERNAME = "username";
-    private static final String KEY_LONGITUDE = "longitude";
-    private static final String KEY_LATITUDE = "latitude";
-    private static final String KEY_TITLE = "title";
-    private static final String KEY_DESCRIPTION = "description";
+    private static final String KEY_LONGITUDE = "stringLongitude";
+    private static final String KEY_LATITUDE = "stringLatitude";
+    private static final String KEY_TITLE = "locationTitle";
+    private static final String KEY_DESCRIPTION = "locationDesc";
+    private static final String KEY_EXTRAINFO = "extraLocationInfo";
+    private static final String KEY_RATING = "rating";
     private static final String KEY_EMPTY = "";
     private String username;
     private String stringLongitude;
     private String stringLatitude;
     private String locationTitle;
     private String locationDesc;
-    private EditText locationTitleInput;
-    private EditText locationDescInput;
-
-
-
-
+    private String extraLocationInfo;
+    private String rating;
 
     Location mLastLocation;
 
@@ -106,12 +105,7 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
         tabLayout.setupWithViewPager(viewPager);
 
 
-
-
         viewPager.setCurrentItem(1);
-
-
-
 
 
             viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -182,10 +176,13 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
 
                     }
 
-
+//
+//
+//                    final EditText locationTitle = findViewById(R.id.locationTitleInput);
+//                    final EditText locationDescription = findViewById(R.id.locationDescInput);
 
                     final EditText locationTitleInput = findViewById(R.id.locationTitleInput);
-                    final EditText locationDescriptionInput = findViewById(R.id.locationDescInput);
+                    final EditText locationDescInput = findViewById(R.id.locationDescInput);
 
                     final RatingBar ratingBar = findViewById(R.id.ratingBar);
 
@@ -194,15 +191,7 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
 
                     shareLocationBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
-l                            //Retrieve the data entered in the edit texts
-//                            username = usernameInput.getText().toString().toLowerCase().trim();
-//                            password = passwordInput.getText().toString().trim();
-//                            confirmPassword = passwordConfirm.getText().toString().trim();
-//                            fName = fNameInput.getText().toString().trim();
-//                            lName = lNameInput.getText().toString().trim();
-//                            email = emailInput.getText().toString().trim();
-
-
+                        public void onClick(View v) {
                             String localLong = Double.toString(globalLong);
                             String localLat = Double.toString(globalLat);
 
@@ -212,87 +201,120 @@ l                            //Retrieve the data entered in the edit texts
                             locationTitle = locationTitleInput.getText().toString();
                             locationDesc = locationDescInput.getText().toString();
 
+                            rating = String.valueOf(ratingBar.getRating());
+
+
+                            Geocoder gcd = new Geocoder(HomeActivity.this, Locale.getDefault());
+                            List<Address> addresses = null;
+                            try {
+                                addresses = gcd.getFromLocation(globalLat, globalLong, 1);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            if (addresses.size() > 0) {
+
+                                Log.d("address admin area", addresses.get(0).getAdminArea());
+
+                                Log.d("address.get", String.valueOf(addresses.get(0)));
+
+                                Log.d("get features name", addresses.get(0).getFeatureName());
+
+                                Log.d("get address line 0", addresses.get(0).getAddressLine(0));
+
+
+                                if (addresses.get(0).getLocality() != null && addresses.get(0).getLocality().length() > 0) {
+                                    extraLocationInfo = "Locality: "+addresses.get(0).getLocality();
+                                }
+
+                                if(addresses.get(0).getLocale() != null) {
+                                    extraLocationInfo = "Postal Code: "+addresses.get(0).getPostalCode();
+                                }
+
+                                if (extraLocationInfo==null)
+                                    extraLocationInfo="No Additional Info Found";
+                            }
+                            else {
+                                extraLocationInfo="No Additional Info Found";
+                            }
 
 
 
+                            displayLoader();
 
 
+                            JSONObject request = new JSONObject();
+                            try {
+                                //input key parameters for external php json database query
+                                request.put(KEY_USERNAME, username);
+                                request.put(KEY_LONGITUDE, stringLongitude);
+                                request.put(KEY_LATITUDE, stringLatitude);
+                                request.put(KEY_TITLE, locationTitle);
+                                request.put(KEY_DESCRIPTION, locationDesc);
+                                request.put(KEY_EXTRAINFO, extraLocationInfo);
+                                request.put(KEY_RATING, rating);
 
-//                            private String username;
-//                            private String stringLongitude;
-//                            private String stringLatitude;
-//                            private String locationTitle;
-//                            private String locationDesc;
+                                Log.d("sadness", "username: " +username);
+                                Log.d("sadness", "title: " +locationTitle);
+                                Log.d("sadness", "description: " +locationDesc);
+                                Log.d("sadness", "extraInfo: " +extraLocationInfo);
+                                Log.d("sadness", "lat: " +stringLatitude);
+                                Log.d("sadness", "lng: " +stringLongitude);
+                                Log.d("sadness", "rating: " +rating);
 
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            JsonObjectRequest jsArrayRequest = new JsonObjectRequest
+                                    (Request.Method.POST, api_url, request, new Response.Listener<JSONObject>() {
+                                        @Override
+                                        public void onResponse(JSONObject response) {
+                                            pDialog.dismiss();
+                                            try {
+                                                //check if successful response
 
+                                                if (response.getInt(KEY_STATUS) == 0) {
+                                                    Toast.makeText(getApplicationContext(),
+                                                            "Successfully posted!", Toast.LENGTH_LONG).show();
 
-//                            Toast.makeText(HomeActivity.this,
-//                                    "Longitude = "+localLong+" Lat = "+localLat , Toast.LENGTH_LONG).show();
-                            Toast.makeText(HomeActivity.this,
-                                    "test" , Toast.LENGTH_LONG).show();
+                                                }else{
+                                                    Toast.makeText(getApplicationContext(),
+                                                            response.getString(KEY_MESSAGE), Toast.LENGTH_SHORT).show();
 
-                            //displayLoader();
+                                                }
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    }, new Response.ErrorListener() {
 
+                                        @Override
+                                        public void onErrorResponse(VolleyError error) {
+                                            pDialog.dismiss();
 
+                                            //Display error message whenever an error occurs
+                                            Toast.makeText(getApplicationContext(),
+                                                    error.getMessage(), Toast.LENGTH_SHORT).show();
 
+                                        }
+                                    });
 
-//                            JSONObject request = new JSONObject();
-//                            try {
-//                                //input key parameters for external php json database query
-//                                request.put(KEY_USERNAME, username);
-//                                request.put(KEY_LONGITUDE, stringLongitude);
-//                                request.put(KEY_LATITUDE, stringLatitude);
-//                                request.put(KEY_TITLE, locationTitle);
-//                                request.put(KEY_DESCRIPTION, locationDesc);
-//
-//                            } catch (JSONException e) {
-//                                e.printStackTrace();
-//                            }
-//                            JsonObjectRequest jsArrayRequest = new JsonObjectRequest
-//                                    (Request.Method.POST, login_url, request, new Response.Listener<JSONObject>() {
-//                                        @Override
-//                                        public void onResponse(JSONObject response) {
-//                                            pDialog.dismiss();
-//                                            try {
-//                                                //check if successful response
-//
-//                                                if (response.getInt(KEY_STATUS) == 0) {
-//                                                    session.loginUser(username,response.getString(KEY_FIRST_NAME));
-//                                                    loadDashboard();
-//
-//                                                }else{
-//                                                    Toast.makeText(getApplicationContext(),
-//                                                            response.getString(KEY_MESSAGE), Toast.LENGTH_SHORT).show();
-//
-//                                                }
-//                                            } catch (JSONException e) {
-//                                                e.printStackTrace();
-//                                            }
-//                                        }
-//                                    }, new Response.ErrorListener() {
-//
-//                                        @Override
-//                                        public void onErrorResponse(VolleyError error) {
-//                                            pDialog.dismiss();
-//
-//                                            //Display error message whenever an error occurs
-//                                            Toast.makeText(getApplicationContext(),
-//                                                    error.getMessage(), Toast.LENGTH_SHORT).show();
-//
-//                                        }
-//                                    });
-//
-//                            // access singleton's request queue method
-//                            MySingleton.getInstance(this).addToRequestQueue(jsArrayRequest);
+                            // access singleton's request queue method
+                            MySingleton.getInstance(HomeActivity.this).addToRequestQueue(jsArrayRequest);
 
 
 
                             /*if (validateInputs()) {
-                                registerUser();
+                            registerUser();
                             }*/
-
                         }
-                    });
+
+
+
+
+
+
+                        });
+
 
 
 
@@ -387,7 +409,7 @@ l                            //Retrieve the data entered in the edit texts
     public void onProviderDisabled(String provider) {
 
     }
-    //progress bar for login
+    //progress bar
     private void displayLoader() {
         pDialog = new ProgressDialog(HomeActivity.this);
         pDialog.setMessage("Posting.. Please wait...");
