@@ -14,23 +14,24 @@
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/latText1"
         android:layout_width="match_parent"
-        android:layout_height="32dp"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/longText"
         android:layout_marginTop="100dp"
-        android:layout_marginBottom="50dp"
         android:background="@color/White"
-        android:text="This Page Will Contain"
-        android:textAlignment="center"/>
+        android:text="Location Feed"
+        android:textAlignment="center"
+        android:textSize="30sp" />
 
-
-    <android.support.v7.widget.AppCompatTextView
-        android:id="@+id/longText"
+    <android.support.v7.widget.RecyclerView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/rv_feed"
         android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:background="@color/White"
-        android:text="A Feed of Locations"
+        android:layout_height="match_parent"
         android:layout_marginTop="150dp"
-        android:textAlignment="center"/>
+        android:scrollbars="vertical"
+        android:fadeScrollbars="true"
+        />
 
 
 </FrameLayout>

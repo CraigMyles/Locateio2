@@ -1,10 +1,7 @@
 package im.craig.locateio;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Criteria;
@@ -21,6 +18,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -28,6 +27,8 @@ import android.widget.EditText;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import java.lang.reflect.Type;
+
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -36,19 +37,46 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
 import im.craig.locateio.adapter.MainPagerAdapter;
+import im.craig.locateio.adapter.MyRecyclerViewAdapter;
 
-import static android.accounts.AccountManager.KEY_PASSWORD;
+class LocationModel {
+    @SerializedName("locationID")
+    public String mlocationID;
+    @SerializedName("username")
+    public String musername;
+    @SerializedName("title")
+    public String mtitle;
+    @SerializedName("description")
+    public String mdescription;
+    @SerializedName("extraInfo")
+    public String mextraInfo;
+    @SerializedName("lat")
+    public String mlat;
+    @SerializedName("lng")
+    public String mlng;
+    @SerializedName("rating")
+    public String mrating;
+    @SerializedName("posted")
+    public String mposted;
 
-public class HomeActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+}
+
+public class HomeActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, MyRecyclerViewAdapter.ItemClickListener {
 
     private SessionHandler session;
     private ProgressDialog pDialog;
@@ -61,7 +89,8 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
     Double globalLat;
 
 
-    private String api_url = "https://craig.im/locateio/shareLocation.php";
+    private String shareLocation_api_url = "https://craig.im/locateio/shareLocation.php";
+    private String loadLocations_api_url = "https://craig.im/locateio/loadLocations.php";
     private static final String KEY_STATUS = "status";
     private static final String KEY_MESSAGE = "message";
     private static final String KEY_USERNAME = "username";
@@ -72,6 +101,7 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
     private static final String KEY_EXTRAINFO = "extraLocationInfo";
     private static final String KEY_RATING = "rating";
     private static final String KEY_EMPTY = "";
+    private static final String KEY_KEY = "reqData";
     private String username;
     private String stringLongitude;
     private String stringLatitude;
@@ -79,6 +109,12 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
     private String locationDesc;
     private String extraLocationInfo;
     private String rating;
+
+    private String key;
+
+    private ArrayList mLocationList;
+
+    private MyRecyclerViewAdapter adapter;
 
     Location mLastLocation;
 
@@ -103,6 +139,9 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.am_tab_layout);
         tabLayout.setupWithViewPager(viewPager);
+
+
+        loadLocations();
 
 
         viewPager.setCurrentItem(1);
@@ -176,10 +215,6 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
 
                     }
 
-//
-//
-//                    final EditText locationTitle = findViewById(R.id.locationTitleInput);
-//                    final EditText locationDescription = findViewById(R.id.locationDescInput);
 
                     final EditText locationTitleInput = findViewById(R.id.locationTitleInput);
                     final EditText locationDescInput = findViewById(R.id.locationDescInput);
@@ -265,7 +300,7 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
                                 e.printStackTrace();
                             }
                             JsonObjectRequest jsArrayRequest = new JsonObjectRequest
-                                    (Request.Method.POST, api_url, request, new Response.Listener<JSONObject>() {
+                                    (Request.Method.POST, shareLocation_api_url, request, new Response.Listener<JSONObject>() {
                                         @Override
                                         public void onResponse(JSONObject response) {
                                             pDialog.dismiss();
@@ -301,23 +336,8 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
                             // access singleton's request queue method
                             MySingleton.getInstance(HomeActivity.this).addToRequestQueue(jsArrayRequest);
 
-
-
-                            /*if (validateInputs()) {
-                            registerUser();
-                            }*/
                         }
-
-
-
-
-
-
                         });
-
-
-
-
 
 
                     if(tv1 == null)
@@ -341,6 +361,107 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
         });
 
 
+    }
+
+    private void loadLocations() {
+
+
+
+
+
+        Log.d("log", "loadLocations: begin running");
+        displayLoader();
+        JSONObject request = new JSONObject();
+        key = "reqData";
+        try {
+            //input key parameters for external php json database query
+            request.put(KEY_KEY, key);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JsonObjectRequest jsArrayRequest = new JsonObjectRequest
+                (Request.Method.POST, loadLocations_api_url, request, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        pDialog.dismiss();
+                        try {
+                            //check if successful response
+
+                            if (response.getInt(KEY_STATUS) == 0) {
+
+                                Gson gson = new Gson();
+                                LocationModel[] locationList = gson.fromJson(response.getString(KEY_MESSAGE), LocationModel[].class);
+                                for (LocationModel location : locationList){
+
+
+
+                                    new ArrayList<>(Arrays.asList(location));
+
+
+
+                                    Log.d("test", "onResponse:"+location.mlocationID);
+                                    Log.d("test2", "onResponse:"+location.mlocationID + "-" + location.musername + "-" + location.mtitle + "-" + location.mdescription + "-" + location.mextraInfo + "-" + location.mlat + "-" + location.mlng + "-" + location.mrating + "-" + location.mposted);
+
+                                    //Log.d("test", "onResponse: LocationList Length "+locationList.length);
+                                }
+
+//                                RecyclerView mLocationList = (RecyclerView) findViewById(R.id.rv_feed);
+//
+//                                LinearLayoutManager layoutManager = new LinearLayoutManager(HomeActivity.this);
+//                                mLocationList.setLayoutManager(layoutManager);
+//
+//                                // Fixed size of content
+//                                mLocationList.setHasFixedSize(true);
+//
+//                                LocationAdapter adapter = new LocationAdapter(getApplicationContext(), NUM_ITEMS, data);
+//
+//                                mLocationList.setAdapter(adapter);
+
+
+
+                                // data to populate the RecyclerView with
+                                ArrayList<String> animalNames = new ArrayList<>();
+                                animalNames.add("Horse");
+                                animalNames.add("Cow");
+                                animalNames.add("Camel");
+                                animalNames.add("Sheep");
+                                animalNames.add("Goat");
+
+                                // set up the RecyclerView
+                                RecyclerView recyclerView = findViewById(R.id.rv_feed);
+                                recyclerView.setLayoutManager(new LinearLayoutManager(HomeActivity.this));
+                                adapter = new MyRecyclerViewAdapter(HomeActivity.this, animalNames);
+                                adapter.setClickListener(HomeActivity.this);
+                                recyclerView.setAdapter(adapter);
+
+
+
+
+                            }else{
+                                Toast.makeText(getApplicationContext(),
+                                        response.getString(KEY_MESSAGE), Toast.LENGTH_SHORT).show();
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        pDialog.dismiss();
+
+                        //Display error message whenever an error occurs
+                        Toast.makeText(getApplicationContext(),
+                                error.getMessage(), Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+
+        // access singleton's request queue method
+        MySingleton.getInstance(this).addToRequestQueue(jsArrayRequest);
     }
 
     @Override
@@ -412,10 +533,16 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
     //progress bar
     private void displayLoader() {
         pDialog = new ProgressDialog(HomeActivity.this);
-        pDialog.setMessage("Posting.. Please wait...");
+        pDialog.setMessage("Loading.. Please wait...");
         pDialog.setIndeterminate(false);
         pDialog.setCancelable(false);
         pDialog.show();
+
+    }
+
+    @Override
+    public void onItemClick(View view, int position) {
+        Toast.makeText(this, "You clicked " + adapter.getItem(position) + " on row number " + position, Toast.LENGTH_SHORT).show();
 
     }
 }
