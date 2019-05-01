@@ -39,6 +39,7 @@ public class Dashboard extends AppCompatActivity {
 
         Button homeBtn = findViewById(R.id.btnHome);
 
+        //when the logout button is pressed
         logoutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -50,7 +51,7 @@ public class Dashboard extends AppCompatActivity {
             }
         });
 
-
+        //when the question mark button is set
         questionBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

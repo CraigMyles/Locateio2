@@ -38,6 +38,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     public void onBindViewHolder(ViewHolder holder, int position) {
         LocationModel location = mData[position];
 
+        //set text boxes to their corresponding data in [position]
         holder.mTv_title.setText(location.mtitle);
         holder.mTv_description.setText(location.mdescription);
         holder.mTv_extraInfo.setText(location.mextraInfo);
@@ -60,6 +61,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        //init of textviews
         TextView mTv_title;
         TextView mTv_description;
         TextView mTv_extraInfo;
@@ -97,6 +99,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 
         @Override
         public void onClick(View view) {
+            //what to do when clicked
             if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
         }
     }

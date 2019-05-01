@@ -9,17 +9,15 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -30,8 +28,6 @@ import android.widget.EditText;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import java.lang.reflect.Type;
-
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -40,26 +36,18 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
@@ -79,9 +67,6 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
     Double globalLat;
 
     SwipeRefreshLayout mSwipeRefreshLayout;
-
-
-
 
     private String shareLocation_api_url = "https://craig.im/locateio/shareLocation.php";
     private String loadLocations_api_url = "https://craig.im/locateio/loadLocations.php";
@@ -115,10 +100,6 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
     private static MapView mapView;
     private GoogleMap gmap;
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
-
-
-
-
 
 
     @Override
@@ -243,118 +224,115 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
                             rating = String.valueOf(ratingBar.getRating());
 
 
-                            Geocoder gcd = new Geocoder(HomeActivity.this, Locale.getDefault());
-                            List<Address> addresses = null;
-                            try {
-                                addresses = gcd.getFromLocation(globalLat, globalLong, 1);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            if (addresses.size() > 0) {
+                            if (!KEY_EMPTY.equals(locationDesc) || !KEY_EMPTY.equals(locationTitle)) {
 
-                                Log.d("address admin area", addresses.get(0).getAdminArea());
-
-                                Log.d("address.get", String.valueOf(addresses.get(0)));
-
-                                Log.d("get features name", addresses.get(0).getFeatureName());
-
-                                Log.d("get address line 0", addresses.get(0).getAddressLine(0));
+                                Geocoder gcd = new Geocoder(HomeActivity.this, Locale.getDefault());
+                                List<Address> addresses = null;
+                                try {
+                                    addresses = gcd.getFromLocation(globalLat, globalLong, 1);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                if (addresses.size() > 0) {
 
 
-                                if (addresses.get(0).getLocality() != null && addresses.get(0).getLocality().length() > 0) {
-                                    extraLocationInfo = "Locality: "+addresses.get(0).getLocality();
+                                    if (addresses.get(0).getLocality() != null && addresses.get(0).getLocality().length() > 0) {
+                                        extraLocationInfo = "Locality: " + addresses.get(0).getLocality();
+                                    }
+
+                                    if (addresses.get(0).getLocale() != null) {
+                                        extraLocationInfo = "Postal Code: " + addresses.get(0).getPostalCode();
+                                    }
+
+                                    if (extraLocationInfo == null)
+                                        extraLocationInfo = "No Additional Info Found";
+                                } else {
+                                    extraLocationInfo = "No Additional Info Found";
                                 }
 
-                                if(addresses.get(0).getLocale() != null) {
-                                    extraLocationInfo = "Postal Code: "+addresses.get(0).getPostalCode();
+
+                                displayLoader();
+
+
+                                JSONObject request = new JSONObject();
+                                try {
+                                    //input key parameters for external php json database query
+                                    request.put(KEY_USERNAME, username);
+                                    request.put(KEY_LONGITUDE, stringLongitude);
+                                    request.put(KEY_LATITUDE, stringLatitude);
+                                    request.put(KEY_TITLE, locationTitle);
+                                    request.put(KEY_DESCRIPTION, locationDesc);
+                                    request.put(KEY_EXTRAINFO, extraLocationInfo);
+                                    request.put(KEY_RATING, rating);
+
+                                    Log.d("sadness", "username: " + username);
+                                    Log.d("sadness", "title: " + locationTitle);
+                                    Log.d("sadness", "description: " + locationDesc);
+                                    Log.d("sadness", "extraInfo: " + extraLocationInfo);
+                                    Log.d("sadness", "lat: " + stringLatitude);
+                                    Log.d("sadness", "lng: " + stringLongitude);
+                                    Log.d("sadness", "rating: " + rating);
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
                                 }
+                                JsonObjectRequest jsArrayRequest = new JsonObjectRequest
+                                        (Request.Method.POST, shareLocation_api_url, request, new Response.Listener<JSONObject>() {
+                                            @Override
+                                            public void onResponse(JSONObject response) {
+                                                pDialog.dismiss();
+                                                try {
+                                                    //check if successful response
 
-                                if (extraLocationInfo==null)
-                                    extraLocationInfo="No Additional Info Found";
-                            }
-                            else {
-                                extraLocationInfo="No Additional Info Found";
-                            }
+                                                    if (response.getInt(KEY_STATUS) == 0) {
 
+                                                        //reset text
+                                                        locationTitleInput.setText("");
+                                                        locationDescInput.setText("");
+                                                        ratingBar.setRating(0);
 
-
-                            displayLoader();
-
-
-                            JSONObject request = new JSONObject();
-                            try {
-                                //input key parameters for external php json database query
-                                request.put(KEY_USERNAME, username);
-                                request.put(KEY_LONGITUDE, stringLongitude);
-                                request.put(KEY_LATITUDE, stringLatitude);
-                                request.put(KEY_TITLE, locationTitle);
-                                request.put(KEY_DESCRIPTION, locationDesc);
-                                request.put(KEY_EXTRAINFO, extraLocationInfo);
-                                request.put(KEY_RATING, rating);
-
-                                Log.d("sadness", "username: " +username);
-                                Log.d("sadness", "title: " +locationTitle);
-                                Log.d("sadness", "description: " +locationDesc);
-                                Log.d("sadness", "extraInfo: " +extraLocationInfo);
-                                Log.d("sadness", "lat: " +stringLatitude);
-                                Log.d("sadness", "lng: " +stringLongitude);
-                                Log.d("sadness", "rating: " +rating);
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                            JsonObjectRequest jsArrayRequest = new JsonObjectRequest
-                                    (Request.Method.POST, shareLocation_api_url, request, new Response.Listener<JSONObject>() {
-                                        @Override
-                                        public void onResponse(JSONObject response) {
-                                            pDialog.dismiss();
-                                            try {
-                                                //check if successful response
-
-                                                if (response.getInt(KEY_STATUS) == 0) {
-
-                                                    //reset text
-                                                    locationTitleInput.setText("");
-                                                    locationDescInput.setText("");
-                                                    ratingBar.setRating(0);
-
-                                                    //reset view to feed
-                                                    viewPager.setCurrentItem(1);
-                                                    loadLocations();
+                                                        //reset view to feed
+                                                        viewPager.setCurrentItem(1);
+                                                        loadLocations();
 
 
-                                                    Toast.makeText(getApplicationContext(),
-                                                            "Successfully posted!", Toast.LENGTH_LONG).show();
+                                                        Toast.makeText(getApplicationContext(),
+                                                                "Successfully posted!", Toast.LENGTH_LONG).show();
 
+                                                    } else {
+                                                        Toast.makeText(getApplicationContext(),
+                                                                response.getString(KEY_MESSAGE), Toast.LENGTH_SHORT).show();
 
-
-
-
-
-                                                }else{
-                                                    Toast.makeText(getApplicationContext(),
-                                                            response.getString(KEY_MESSAGE), Toast.LENGTH_SHORT).show();
-
+                                                    }
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
                                                 }
-                                            } catch (JSONException e) {
-                                                e.printStackTrace();
                                             }
-                                        }
-                                    }, new Response.ErrorListener() {
+                                        }, new Response.ErrorListener() {
 
-                                        @Override
-                                        public void onErrorResponse(VolleyError error) {
-                                            pDialog.dismiss();
+                                            @Override
+                                            public void onErrorResponse(VolleyError error) {
+                                                pDialog.dismiss();
 
-                                            //Display error message whenever an error occurs
-                                            Toast.makeText(getApplicationContext(),
-                                                    error.getMessage(), Toast.LENGTH_SHORT).show();
+                                                //Display error message whenever an error occurs
+                                                Toast.makeText(getApplicationContext(),
+                                                        error.getMessage(), Toast.LENGTH_SHORT).show();
 
-                                        }
-                                    });
+                                            }
+                                        });
 
-                            // access singleton's request queue method
-                            MySingleton.getInstance(HomeActivity.this).addToRequestQueue(jsArrayRequest);
+                                // access singleton's request queue method
+                                MySingleton.getInstance(HomeActivity.this).addToRequestQueue(jsArrayRequest);
+                            }else{
+                                if (KEY_EMPTY.equals(locationDesc) ) {
+                                    locationDescInput.setError("Description cannot be empty");
+                                    locationDescInput.requestFocus();
+                                }
+                                if (KEY_EMPTY.equals(locationTitle) ) {
+                                    locationTitleInput.setError("Title cannot be empty");
+                                    locationTitleInput.requestFocus();
+                                }
+                            }
 
 
 
@@ -544,7 +522,7 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
 
     }
 
-    @Override
+    @Override //saves instant state
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
@@ -556,6 +534,7 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
 
     }
 
+    //life cycle
     @Override
     protected void onPause() {
         super.onPause();
@@ -590,4 +569,5 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
         // Stop refresh animation
         mSwipeRefreshLayout.setRefreshing(false);
     }
+
 }

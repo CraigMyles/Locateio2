@@ -8,10 +8,10 @@ import android.view.ViewGroup;
 import im.craig.locateio.R;
 
 
-public class CameraFragment extends BaseFragment {
+public class ShareFragment extends BaseFragment {
 
-    public static CameraFragment create(){
-        return new CameraFragment();
+    public static ShareFragment create(){
+        return new ShareFragment();
     }
     @Override
     public int getLayoutResId() {

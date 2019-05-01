@@ -13,12 +13,11 @@ public class FeedFragment extends BaseFragment {
     public static FeedFragment create(){
         return new FeedFragment();
     }
+    //get the id of the frag
     @Override
     public int getLayoutResId() {
         return R.layout.fragment_feed;
-
     }
-
     @Override
     public void inOnCreateView(View root, ViewGroup container, @Nullable Bundle savedInstanceState) {
 

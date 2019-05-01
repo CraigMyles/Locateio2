@@ -15,6 +15,7 @@ public abstract class BaseFragment extends Fragment {
 
     @Nullable
     @Override
+    //inflates the fragment, gets container  and creates view
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         mRoot = inflater.inflate(getLayoutResId(), container, false);
@@ -26,8 +27,5 @@ public abstract class BaseFragment extends Fragment {
 
     @LayoutRes
     public abstract int getLayoutResId();
-
-
-
     public abstract void inOnCreateView(View root, @LayoutRes ViewGroup container, @Nullable Bundle savedInstanceState);
 }
