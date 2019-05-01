@@ -18,9 +18,6 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
 
-
-
-
     // data is passed into the constructor
     public MyRecyclerViewAdapter(Context context, List<String> data) {
         this.mInflater = LayoutInflater.from(context);
@@ -37,15 +34,28 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     // binds the data to the TextView in each row
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        String location = mData.get(position);
-        holder.mTv_title.setText(location);
-        holder.mTv_description.setText(location);
-        holder.mTv_extraInfo.setText(location);
-        holder.mTv_username.setText(location);
-        holder.mTv_lat.setText(location);
-        holder.mTv_lng.setText(location);
-        holder.mTv_posted.setText(location);
-        holder.mTv_rating.setText(location);
+        String data1 = mData.get(position);
+        String data2 = mData.get(position+1);
+        String data3 = mData.get(position+2);
+        String data4 = mData.get(position+3);
+        String data5 = mData.get(position+4);
+        String data6 = mData.get(position+5);
+        String data7 = mData.get(position+6);
+        String data8 = mData.get(position+7);
+        String data9 = mData.get(position+8);
+
+
+
+            holder.mTv_title.setText(data2);
+            holder.mTv_description.setText(data3);
+            holder.mTv_extraInfo.setText(data4);
+            holder.mTv_username.setText(data5);
+            holder.mTv_lat.setText(data6);
+            holder.mTv_lng.setText(data7);
+            holder.mTv_posted.setText(data8);
+            holder.mTv_rating.setText(data9);
+
+
     }
 
     // total number of rows
@@ -105,4 +115,3 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
         void onItemClick(View view, int position);
     }
 }
-

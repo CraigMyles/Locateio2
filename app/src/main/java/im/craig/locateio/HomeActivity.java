@@ -38,10 +38,12 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
@@ -123,11 +125,13 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
 
     Location mLastLocation;
 
-    GoogleMap mGoogleMap;
-    MapView mapView;
+    private static MapView mapView;
+    private GoogleMap gmap;
+    private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
+
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
@@ -152,10 +156,17 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
         loadLocations();
 
 
+
+
+
+
         viewPager.setCurrentItem(1);
+        mapView = findViewById(R.id.mapView);
 
 
-            viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                 @Override
                 public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
@@ -363,6 +374,16 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
                     //code for when screen is on the Map View
 
 
+                    Bundle mapViewBundle = null;
+                    if (savedInstanceState != null) {
+                        mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
+                    }
+
+                    mapView.onCreate(mapViewBundle);
+                    mapView.getMapAsync(HomeActivity.this);
+
+
+
 
 
                 }
@@ -416,14 +437,15 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
                                     myLocations.add(location.mrating);
                                     myLocations.add(location.mposted);
 
+
+                                    Log.d("READTHIS:", "onResponse: "+location.mlocationID);
                                     //Log.d("test", "onResponse:"+location.mlocationID);
                                     //Log.d("test2", "onResponse:"+location.mlocationID + "-" + location.musername + "-" + location.mtitle + "-" + location.mdescription + "-" + location.mextraInfo + "-" + location.mlat + "-" + location.mlng + "-" + location.mrating + "-" + location.mposted);
 
                                     //Log.d("test", "onResponse: LocationList Length "+locationList.length);
                                 }
 
-
-
+                                Log.d("test", "onResponse: OUTSIDE THE FOR LOOOP "+myLocations.size());
 
                                 // set up the RecyclerView
                                 RecyclerView recyclerView = findViewById(R.id.rv_feed);
@@ -433,10 +455,6 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
                                 recyclerView.setAdapter(adapter);
                                 DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), 1);
                                 recyclerView.addItemDecoration(dividerItemDecoration);
-
-
-
-
 
 
                             }else{
@@ -481,18 +499,24 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        //mapView.onResume();
+    }
+
+    @Override
     protected void onStart() {
-        //mGoogleApiClient.connect();
         super.onStart();
+        //mapView.onStart();
+
 
 
     }
 
     @Override
     protected void onStop() {
-        //mGoogleApiClient.disconnect();
-        //mLocationManager.removeUpdates((android.location.LocationListener) HomeActivity.this);
         super.onStop();
+        mapView.onStop();
     }
 
     @Override
@@ -547,16 +571,45 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
 
     }
 
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState){
-        //super.onview(view, savedInstanceState);
-    }
+//    public void onViewCreated(View view, @Nullable Bundle savedInstanceState){
+//        super.onview(view, savedInstanceState);
+//    }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
-//        MapsInitializer.initialize(HomeActivity.this);
-//        mGoogleMap = googleMap;
-//        googleMap.setMapStyle(1);
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        Bundle mapViewBundle = outState.getBundle(MAP_VIEW_BUNDLE_KEY);
+        if (mapViewBundle == null) {
+            mapViewBundle = new Bundle();
+            outState.putBundle(MAP_VIEW_BUNDLE_KEY, mapViewBundle);
+        }
+
+        mapView.onSaveInstanceState(mapViewBundle);
     }
 
+
+    @Override
+    protected void onPause() {
+        mapView.onPause();
+        super.onPause();
+    }
+    @Override
+    protected void onDestroy() {
+        mapView.onDestroy();
+        super.onDestroy();
+    }
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mapView.onLowMemory();
+    }
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        gmap = googleMap;
+        //gmap.setMinZoomPreference(12);
+        LatLng ny = new LatLng(40.7143528, -74.0059731);
+        gmap.moveCamera(CameraUpdateFactory.newLatLng(ny));
+    }
 
 }

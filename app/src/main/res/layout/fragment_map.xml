@@ -9,8 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="80dp"
-        android:background="@drawable/card_background"
-        />
+        android:background="@drawable/card_background" />
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/latText1"
@@ -29,11 +28,5 @@
         android:layout_height="match_parent"
         android:layout_marginTop="150dp"
         android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-
-        />
-
-
-
-
+        android:layout_marginRight="10dp" />
 </FrameLayout>
