@@ -9,7 +9,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="85dp"
+        android:layout_marginTop="80dp"
         android:background="@drawable/card_background"></View>
 
     <TextView
@@ -123,9 +123,11 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="450dp"
-        android:layout_marginLeft="75dp"
+        android:layout_marginBottom="200dp"
+        android:layout_marginRight="200dp"
+        android:layout_gravity="bottom|end"
         android:text="Rate this location"
+        android:labelFor="@id/ratingBar"
 
         />
 
@@ -134,16 +136,21 @@
         android:id="@+id/ratingBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="75dp"
-        android:layout_marginTop="490dp" />
+        android:layout_marginTop="200dp"
+        android:layout_marginRight="75dp"
+        android:layout_marginBottom="200dp"
+        android:layout_gravity="bottom|end"
+        />
+
 
 
     <Button
         android:id="@+id/shareLocationBtn"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="100dp"
-        android:layout_marginTop="600dp"
+        android:layout_marginRight="100dp"
+        android:layout_marginBottom="100dp"
+        android:layout_gravity="bottom|end"
         android:background="#FFFFFF"
         android:padding="10dp"
         android:text="Share this location" />

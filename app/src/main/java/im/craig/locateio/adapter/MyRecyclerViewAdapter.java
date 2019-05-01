@@ -10,16 +10,17 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import im.craig.locateio.LocationModel;
 import im.craig.locateio.R;
 
 public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.ViewHolder> {
 
-    private List<String> mData;
+    private LocationModel[] mData;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
 
     // data is passed into the constructor
-    public MyRecyclerViewAdapter(Context context, List<String> data) {
+    public MyRecyclerViewAdapter(Context context, LocationModel[] data) {
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
     }
@@ -34,34 +35,22 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     // binds the data to the TextView in each row
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        String data1 = mData.get(position);
-        String data2 = mData.get(position+1);
-        String data3 = mData.get(position+2);
-        String data4 = mData.get(position+3);
-        String data5 = mData.get(position+4);
-        String data6 = mData.get(position+5);
-        String data7 = mData.get(position+6);
-        String data8 = mData.get(position+7);
-        String data9 = mData.get(position+8);
+        LocationModel location = mData[position];
 
-
-
-            holder.mTv_title.setText(data2);
-            holder.mTv_description.setText(data3);
-            holder.mTv_extraInfo.setText(data4);
-            holder.mTv_username.setText(data5);
-            holder.mTv_lat.setText(data6);
-            holder.mTv_lng.setText(data7);
-            holder.mTv_posted.setText(data8);
-            holder.mTv_rating.setText(data9);
-
-
+        holder.mTv_title.setText(location.mtitle);
+        holder.mTv_description.setText(location.mdescription);
+        holder.mTv_extraInfo.setText(location.mextraInfo);
+        holder.mTv_username.setText(location.musername);
+        holder.mTv_lat.setText(location.mlat);
+        holder.mTv_lng.setText(location.mlng);
+        holder.mTv_posted.setText(location.mposted);
+        holder.mTv_rating.setText(location.mrating);
     }
 
     // total number of rows
     @Override
     public int getItemCount() {
-        return mData.size();
+        return mData.length;
     }
 
 
@@ -101,7 +90,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 
     // convenience method for getting data at click position
     public String getItem(int id) {
-        return mData.get(id);
+        return mData[id].mlocationID;
 
     }
 

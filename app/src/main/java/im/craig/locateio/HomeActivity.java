@@ -61,28 +61,6 @@ import java.util.Locale;
 import im.craig.locateio.adapter.MainPagerAdapter;
 import im.craig.locateio.adapter.MyRecyclerViewAdapter;
 
-class LocationModel {
-    @SerializedName("locationID")
-    public String mlocationID;
-    @SerializedName("username")
-    public String musername;
-    @SerializedName("title")
-    public String mtitle;
-    @SerializedName("description")
-    public String mdescription;
-    @SerializedName("extraInfo")
-    public String mextraInfo;
-    @SerializedName("lat")
-    public String mlat;
-    @SerializedName("lng")
-    public String mlng;
-    @SerializedName("rating")
-    public String mrating;
-    @SerializedName("posted")
-    public String mposted;
-
-}
-
 public class HomeActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, MyRecyclerViewAdapter.ItemClickListener, OnMapReadyCallback {
 
     private SessionHandler session;
@@ -167,30 +145,30 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-                @Override
-                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-                    //if on first screen
-                    if (position == 0)
-                    {
-                        background.setBackgroundColor(colourBlue);
-                        //background.setAlpha(1-positionOffset);
-                    }
-
-                    //if on mid screen
-                    else if (position == 1) {
-                        background.setBackgroundColor(colourPink);
-                        //background.setAlpha(positionOffset);
-                    }
-
-                    //if on last screen
-                    else if (position == 2) {
-                        background.setBackgroundColor(colourGreen);
-                        //background.setAlpha(1+positionOffset);
-                    }
-
-
+                //if on first screen
+                if (position == 0)
+                {
+                    background.setBackgroundColor(colourBlue);
+                    //background.setAlpha(1-positionOffset);
                 }
+
+                //if on mid screen
+                else if (position == 1) {
+                    background.setBackgroundColor(colourPink);
+                    //background.setAlpha(positionOffset);
+                }
+
+                //if on last screen
+                else if (position == 2) {
+                    background.setBackgroundColor(colourGreen);
+                    //background.setAlpha(1+positionOffset);
+                }
+
+
+            }
 
 
             @Override
@@ -356,16 +334,16 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
                             MySingleton.getInstance(HomeActivity.this).addToRequestQueue(jsArrayRequest);
 
                         }
-                        });
+                    });
 
 
                     if(tv1 == null)
                         tv1 = (TextView)findViewById(R.id.longitudeValue);
-                        tv1.setText(Double.toString(globalLong));
+                    tv1.setText(Double.toString(globalLong));
 
                     if(tv2 == null)
                         tv2 = (TextView)findViewById(R.id.latitudeValue);
-                        tv2.setText(Double.toString(globalLat));
+                    tv2.setText(Double.toString(globalLat));
 
 
 
@@ -374,13 +352,13 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
                     //code for when screen is on the Map View
 
 
-                    Bundle mapViewBundle = null;
-                    if (savedInstanceState != null) {
-                        mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
-                    }
+//                    Bundle mapViewBundle = null;
+//                    if (savedInstanceState != null) {
+//                        mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
+//                    }
 
-                    mapView.onCreate(mapViewBundle);
-                    mapView.getMapAsync(HomeActivity.this);
+                    //mapView.onCreate(mapViewBundle);
+                    //mapView.getMapAsync(HomeActivity.this);
 
 
 
@@ -420,37 +398,13 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
                             //check if successful response
 
                             if (response.getInt(KEY_STATUS) == 0) {
-
-                                ArrayList<String> myLocations = new ArrayList<>();
-
                                 Gson gson = new Gson();
                                 LocationModel[] locationList = gson.fromJson(response.getString(KEY_MESSAGE), LocationModel[].class);
-                                for (LocationModel location : locationList){
-
-                                    myLocations.add(location.mlocationID);
-                                    myLocations.add(location.musername);
-                                    myLocations.add(location.mtitle);
-                                    myLocations.add(location.mdescription);
-                                    myLocations.add(location.mextraInfo);
-                                    myLocations.add(location.mlat);
-                                    myLocations.add(location.mlng);
-                                    myLocations.add(location.mrating);
-                                    myLocations.add(location.mposted);
-
-
-                                    Log.d("READTHIS:", "onResponse: "+location.mlocationID);
-                                    //Log.d("test", "onResponse:"+location.mlocationID);
-                                    //Log.d("test2", "onResponse:"+location.mlocationID + "-" + location.musername + "-" + location.mtitle + "-" + location.mdescription + "-" + location.mextraInfo + "-" + location.mlat + "-" + location.mlng + "-" + location.mrating + "-" + location.mposted);
-
-                                    //Log.d("test", "onResponse: LocationList Length "+locationList.length);
-                                }
-
-                                Log.d("test", "onResponse: OUTSIDE THE FOR LOOOP "+myLocations.size());
 
                                 // set up the RecyclerView
                                 RecyclerView recyclerView = findViewById(R.id.rv_feed);
                                 recyclerView.setLayoutManager(new LinearLayoutManager(HomeActivity.this));
-                                adapter = new MyRecyclerViewAdapter(HomeActivity.this, myLocations);
+                                adapter = new MyRecyclerViewAdapter(HomeActivity.this, locationList);
                                 adapter.setClickListener(HomeActivity.this);
                                 recyclerView.setAdapter(adapter);
                                 DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), 1);
@@ -516,7 +470,7 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onStop() {
         super.onStop();
-        mapView.onStop();
+        //mapView.onStop();
     }
 
     @Override
@@ -585,24 +539,24 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
             outState.putBundle(MAP_VIEW_BUNDLE_KEY, mapViewBundle);
         }
 
-        mapView.onSaveInstanceState(mapViewBundle);
+        //mapView.onSaveInstanceState(mapViewBundle);
     }
 
 
     @Override
     protected void onPause() {
-        mapView.onPause();
+        //mapView.onPause();
         super.onPause();
     }
     @Override
     protected void onDestroy() {
-        mapView.onDestroy();
+        //mapView.onDestroy();
         super.onDestroy();
     }
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-        mapView.onLowMemory();
+        //mapView.onLowMemory();
     }
     @Override
     public void onMapReady(GoogleMap googleMap) {
