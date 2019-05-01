@@ -9,6 +9,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -16,6 +17,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -43,7 +45,10 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
@@ -72,6 +77,10 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
 
     Double globalLong;
     Double globalLat;
+
+    SwipeRefreshLayout mSwipeRefreshLayout;
+
+
 
 
     private String shareLocation_api_url = "https://craig.im/locateio/shareLocation.php";
@@ -108,15 +117,18 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
 
 
+
+
+
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        //get session
         session = new SessionHandler(getApplicationContext());
         final User user = session.getUserDetails();
-
-
 
         final View background = findViewById(R.id.home_background_view);
         final ViewPager viewPager = (ViewPager) findViewById(R.id.home_view_pager);
@@ -128,21 +140,15 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
         final int colourBlue = ContextCompat.getColor(this, R.color.CafeSeaBlue);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.am_tab_layout);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
         tabLayout.setupWithViewPager(viewPager);
 
-
+        //call method to load the data to the feed
         loadLocations();
 
 
-
-
-
-
+        //set screen to view fragment 1 (centre)
         viewPager.setCurrentItem(1);
-        mapView = findViewById(R.id.mapView);
-
-
-
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -175,6 +181,7 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
             public void onPageSelected(int position) {
                 if(position == 0)
                 {
+                    //get perms if none for location
                     if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
                         ActivityCompat.requestPermissions(HomeActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
@@ -305,8 +312,24 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
                                                 //check if successful response
 
                                                 if (response.getInt(KEY_STATUS) == 0) {
+
+                                                    //reset text
+                                                    locationTitleInput.setText("");
+                                                    locationDescInput.setText("");
+                                                    ratingBar.setRating(0);
+
+                                                    //reset view to feed
+                                                    viewPager.setCurrentItem(1);
+                                                    loadLocations();
+
+
                                                     Toast.makeText(getApplicationContext(),
                                                             "Successfully posted!", Toast.LENGTH_LONG).show();
+
+
+
+
+
 
                                                 }else{
                                                     Toast.makeText(getApplicationContext(),
@@ -333,6 +356,9 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
                             // access singleton's request queue method
                             MySingleton.getInstance(HomeActivity.this).addToRequestQueue(jsArrayRequest);
 
+
+
+
                         }
                     });
 
@@ -348,21 +374,20 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
 
-                }if(position == 2){
-                    //code for when screen is on the Map View
+                    //if on middle screen (Feed)
+                }if(position == 1){
 
+                    Button reload = (Button) findViewById(R.id.reload);
 
-//                    Bundle mapViewBundle = null;
-//                    if (savedInstanceState != null) {
-//                        mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
-//                    }
+                    reload.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
 
-                    //mapView.onCreate(mapViewBundle);
-                    //mapView.getMapAsync(HomeActivity.this);
-
-
-
-
+                            //when reload icon is pressed, reload data
+                            Toast.makeText(HomeActivity.this, "RELOADING STUFF", Toast.LENGTH_LONG).show();
+                            loadLocations();
+                        }
+                    });
 
                 }
 
@@ -373,12 +398,10 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
 
             }
         });
-
-
     }
 
     private void loadLocations() {
-
+        //getting the list of locations from the database
         displayLoader();
         JSONObject request = new JSONObject();
         key = "reqData";
@@ -389,6 +412,7 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        //the request
         JsonObjectRequest jsArrayRequest = new JsonObjectRequest
                 (Request.Method.POST, loadLocations_api_url, request, new Response.Listener<JSONObject>() {
                     @Override
@@ -397,6 +421,7 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
                         try {
                             //check if successful response
 
+                            //0 means success
                             if (response.getInt(KEY_STATUS) == 0) {
                                 Gson gson = new Gson();
                                 LocationModel[] locationList = gson.fromJson(response.getString(KEY_MESSAGE), LocationModel[].class);
@@ -455,22 +480,16 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onResume() {
         super.onResume();
-        //mapView.onResume();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        //mapView.onStart();
-
-
-
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        //mapView.onStop();
     }
 
     @Override
@@ -521,13 +540,9 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     public void onItemClick(View view, int position) {
-        Toast.makeText(this, "You clicked " + adapter.getItem(position) + " on row number " + position, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Extra Info: " + adapter.getItem(position), Toast.LENGTH_SHORT).show();
 
     }
-
-//    public void onViewCreated(View view, @Nullable Bundle savedInstanceState){
-//        super.onview(view, savedInstanceState);
-//    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -539,31 +554,40 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
             outState.putBundle(MAP_VIEW_BUNDLE_KEY, mapViewBundle);
         }
 
-        //mapView.onSaveInstanceState(mapViewBundle);
     }
-
 
     @Override
     protected void onPause() {
-        //mapView.onPause();
         super.onPause();
     }
     @Override
     protected void onDestroy() {
-        //mapView.onDestroy();
         super.onDestroy();
     }
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-        //mapView.onLowMemory();
-    }
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        gmap = googleMap;
-        //gmap.setMinZoomPreference(12);
-        LatLng ny = new LatLng(40.7143528, -74.0059731);
-        gmap.moveCamera(CameraUpdateFactory.newLatLng(ny));
     }
 
+    @Override
+    public void onMapReady(GoogleMap map) {
+        gmap.addMarker(new MarkerOptions()
+                .position(new LatLng(10, 10))
+                .title("Hello world"));
+    }
+
+    void refreshItems() {
+        // Load items
+        loadLocations();
+        // Load complete
+        onItemsLoadComplete();
+    }
+
+    void onItemsLoadComplete() {
+        // Update the adapter and notify data set changed
+        // ...
+
+        // Stop refresh animation
+        mSwipeRefreshLayout.setRefreshing(false);
+    }
 }

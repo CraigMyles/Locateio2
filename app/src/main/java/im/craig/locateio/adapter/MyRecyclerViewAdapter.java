@@ -1,6 +1,7 @@
 package im.craig.locateio.adapter;
 
 import android.content.Context;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -45,6 +46,9 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
         holder.mTv_lng.setText(location.mlng);
         holder.mTv_posted.setText(location.mposted);
         holder.mTv_rating.setText(location.mrating);
+        holder.mTv_lat_title.setText("Latitude:");
+        holder.mTv_lng_title.setText("Longitude:");
+        holder.mTv_rating_title.setText("RATING:");
     }
 
     // total number of rows
@@ -65,19 +69,28 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
         TextView mTv_posted;
         TextView mTv_rating;
 
+        TextView mTv_lat_title;
+        TextView mTv_lng_title;
+        TextView mTv_rating_title;
+
+
+
 
 
         ViewHolder(View itemView) {
             super(itemView);
             mTv_title = itemView.findViewById(R.id.tv_title);
             mTv_description = itemView.findViewById(R.id.tv_description);
-
             mTv_extraInfo = itemView.findViewById(R.id.tv_extraInfo);
             mTv_username= itemView.findViewById(R.id.tv_username);
             mTv_lat = itemView.findViewById(R.id.tv_lat);
             mTv_lng = itemView.findViewById(R.id.tv_lng);
             mTv_posted = itemView.findViewById(R.id.tv_posted);
             mTv_rating = itemView.findViewById(R.id.tv_rating);
+
+            mTv_lat_title = itemView.findViewById(R.id.tv_lat_title);
+            mTv_lng_title = itemView.findViewById(R.id.tv_lng_title);
+            mTv_rating_title = itemView.findViewById(R.id.tv_rating_title);
             itemView.setOnClickListener(this);
 
         }
@@ -103,4 +116,6 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     public interface ItemClickListener {
         void onItemClick(View view, int position);
     }
+
+
 }

@@ -47,7 +47,7 @@ public class RegistrationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         ActionBar actionBar = getSupportActionBar();
-        actionBar.hide();
+        ///actionBar.hide();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
         session = new SessionHandler(getApplicationContext());
@@ -180,21 +180,19 @@ public class RegistrationActivity extends AppCompatActivity {
     //Validates inputs and/or shows errors
     //if errors lie, set focus on related form input
     private boolean validateInputs() {
+        if (KEY_EMPTY.equals(username)) {
+            usernameInput.setError("Username cannot be empty");
+            usernameInput.requestFocus();
+            return false;
+        }
         if (KEY_EMPTY.equals(fName)) {
             fNameInput.setError("First name cannot be empty");
             fNameInput.requestFocus();
             return false;
-
         }
         if (KEY_EMPTY.equals(lName)) {
-            fNameInput.setError("Last name cannot be empty");
+            lNameInput.setError("Last name cannot be empty");
             fNameInput.requestFocus();
-            return false;
-
-        }
-        if (KEY_EMPTY.equals(username)) {
-            usernameInput.setError("Username cannot be empty");
-            usernameInput.requestFocus();
             return false;
         }
         if (KEY_EMPTY.equals(password)) {
@@ -202,7 +200,6 @@ public class RegistrationActivity extends AppCompatActivity {
             passwordInput.requestFocus();
             return false;
         }
-
         if (KEY_EMPTY.equals(confirmPassword)) {
             passwordConfirm.setError("Confirm Password cannot be empty");
             passwordConfirm.requestFocus();

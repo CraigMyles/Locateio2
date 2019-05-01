@@ -136,7 +136,6 @@
         android:id="@+id/ratingBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="200dp"
         android:layout_marginRight="75dp"
         android:layout_marginBottom="200dp"
         android:layout_gravity="bottom|end"
@@ -144,16 +143,16 @@
 
 
 
-    <Button
-        android:id="@+id/shareLocationBtn"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="100dp"
-        android:layout_marginBottom="100dp"
-        android:layout_gravity="bottom|end"
-        android:background="#FFFFFF"
-        android:padding="10dp"
-        android:text="Share this location" />
+        <Button
+            android:id="@+id/shareLocationBtn"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="100dp"
+            android:layout_marginBottom="100dp"
+            android:layout_gravity="bottom|end"
+            android:background="#FFFFFF"
+            android:padding="10dp"
+            android:text="Share this location" />
 
 
 

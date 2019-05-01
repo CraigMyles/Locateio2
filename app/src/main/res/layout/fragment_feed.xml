@@ -22,16 +22,34 @@
         android:textAlignment="center"
         android:textSize="30sp" />
 
-    <android.support.v7.widget.RecyclerView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/rv_feed"
+    <Button
+        android:id="@+id/reload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:layout_marginTop="110dp"
+        android:layout_marginLeft="10dp"
+        android:drawableTop="@drawable/reload"/>
+
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="150dp"
-        android:scrollbars="vertical"
-        android:fadeScrollbars="true"
-        />
+        android:layout_marginTop="150dp">
+
+        <android.support.v7.widget.RecyclerView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/rv_feed"
+            android:scrollbars="vertical"
+            android:fadeScrollbars="true"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent" />
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+
+
 
 
 </FrameLayout>
