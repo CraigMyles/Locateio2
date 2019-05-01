@@ -38,6 +38,10 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
@@ -77,7 +81,7 @@ class LocationModel {
 
 }
 
-public class HomeActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, MyRecyclerViewAdapter.ItemClickListener {
+public class HomeActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, MyRecyclerViewAdapter.ItemClickListener, OnMapReadyCallback {
 
     private SessionHandler session;
     private ProgressDialog pDialog;
@@ -118,6 +122,9 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
     private MyRecyclerViewAdapter adapter;
 
     Location mLastLocation;
+
+    GoogleMap mGoogleMap;
+    MapView mapView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -539,4 +546,17 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
         Toast.makeText(this, "You clicked " + adapter.getItem(position) + " on row number " + position, Toast.LENGTH_SHORT).show();
 
     }
+
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState){
+        //super.onview(view, savedInstanceState);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+//        MapsInitializer.initialize(HomeActivity.this);
+//        mGoogleMap = googleMap;
+//        googleMap.setMapStyle(1);
+    }
+
+
 }
