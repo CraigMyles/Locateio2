@@ -10,6 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="0dp"
+        android:textSize="18dp"
         tools:text="This is some kinda title "
         android:textColor="#000000"/>
 
@@ -20,5 +21,94 @@
         android:layout_marginTop="20dp"
         tools:text="Some Kinda Description here! super cool!"
         android:textColor="#999999"/>
+
+    <TextView
+        android:id="@+id/tv_extraInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        tools:text="some extra data, probs postal code"
+        android:textColor="#695F5F"/>
+
+    <TextView
+        android:id="@+id/tv_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="20dp"
+        android:layout_gravity="end"
+        android:textAlignment="textEnd"
+        tools:text="By: Username!"
+        android:textColor="#000000"/>
+
+    <TextView
+        android:id="@+id/tv_posted"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:layout_marginRight="20dp"
+        android:layout_gravity="end"
+        android:textAlignment="textEnd"
+        android:textSize="10dp"
+        tools:text="10/04/2019 14:33:23"
+        android:textColor="#000000"/>
+
+    <TextView
+        android:id="@+id/tv_lat_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="65dp"
+        android:layout_marginRight="20dp"
+        android:layout_gravity="start"
+        android:textSize="12dp"
+        tools:text="LONGITUDE:"
+        android:textColor="#000000"/>
+
+    <TextView
+        android:id="@+id/tv_lng_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="65dp"
+        android:layout_marginRight="20dp"
+        android:layout_gravity="end"
+        android:textAlignment="textEnd"
+        android:textSize="12dp"
+        tools:text="LATITUDE:"
+        android:textColor="#000000"/>
+
+    <TextView
+        android:id="@+id/tv_lat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        android:layout_marginRight="20dp"
+        android:layout_gravity="start"
+        android:textSize="24dp"
+        tools:text="-14.532335"
+        android:textColor="#000000"/>
+
+    <TextView
+        android:id="@+id/tv_lng"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        android:layout_marginRight="20dp"
+        android:layout_gravity="end"
+        android:textAlignment="textEnd"
+        android:textSize="24dp"
+        tools:text="132.543543"
+        android:textColor="#000000"/>
+
+    <TextView
+        android:id="@+id/tv_rating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_gravity="center"
+        android:textAlignment="center"
+        android:textSize="32dp"
+        tools:text="5 Stars"
+        android:textColor="#FFC107"/>
 
 </FrameLayout>

@@ -23,16 +23,15 @@
         android:text="Map Screen"
         android:textAlignment="center"/>
 
-
-    <android.support.v7.widget.AppCompatTextView
-        android:id="@+id/longText"
+    <com.google.android.gms.maps.MapView
+        android:id="@+id/mapView"
         android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:background="@color/White"
-        android:text="Display Map Beow"
+        android:layout_height="match_parent"
         android:layout_marginTop="150dp"
-        android:textAlignment="center"/>
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
 
+        />
 
 
 </FrameLayout>

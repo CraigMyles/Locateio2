@@ -18,6 +18,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -351,7 +352,14 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
 
+                }if(position == 2){
+                    //code for when screen is on the Map View
+
+
+
+
                 }
+
             }
 
             @Override
@@ -365,11 +373,6 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
 
     private void loadLocations() {
 
-
-
-
-
-        Log.d("log", "loadLocations: begin running");
         displayLoader();
         JSONObject request = new JSONObject();
         key = "reqData";
@@ -390,50 +393,41 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
 
                             if (response.getInt(KEY_STATUS) == 0) {
 
+                                ArrayList<String> myLocations = new ArrayList<>();
+
                                 Gson gson = new Gson();
                                 LocationModel[] locationList = gson.fromJson(response.getString(KEY_MESSAGE), LocationModel[].class);
                                 for (LocationModel location : locationList){
 
+                                    myLocations.add(location.mlocationID);
+                                    myLocations.add(location.musername);
+                                    myLocations.add(location.mtitle);
+                                    myLocations.add(location.mdescription);
+                                    myLocations.add(location.mextraInfo);
+                                    myLocations.add(location.mlat);
+                                    myLocations.add(location.mlng);
+                                    myLocations.add(location.mrating);
+                                    myLocations.add(location.mposted);
 
-
-                                    new ArrayList<>(Arrays.asList(location));
-
-
-
-                                    Log.d("test", "onResponse:"+location.mlocationID);
-                                    Log.d("test2", "onResponse:"+location.mlocationID + "-" + location.musername + "-" + location.mtitle + "-" + location.mdescription + "-" + location.mextraInfo + "-" + location.mlat + "-" + location.mlng + "-" + location.mrating + "-" + location.mposted);
+                                    //Log.d("test", "onResponse:"+location.mlocationID);
+                                    //Log.d("test2", "onResponse:"+location.mlocationID + "-" + location.musername + "-" + location.mtitle + "-" + location.mdescription + "-" + location.mextraInfo + "-" + location.mlat + "-" + location.mlng + "-" + location.mrating + "-" + location.mposted);
 
                                     //Log.d("test", "onResponse: LocationList Length "+locationList.length);
                                 }
 
-//                                RecyclerView mLocationList = (RecyclerView) findViewById(R.id.rv_feed);
-//
-//                                LinearLayoutManager layoutManager = new LinearLayoutManager(HomeActivity.this);
-//                                mLocationList.setLayoutManager(layoutManager);
-//
-//                                // Fixed size of content
-//                                mLocationList.setHasFixedSize(true);
-//
-//                                LocationAdapter adapter = new LocationAdapter(getApplicationContext(), NUM_ITEMS, data);
-//
-//                                mLocationList.setAdapter(adapter);
 
 
-
-                                // data to populate the RecyclerView with
-                                ArrayList<String> animalNames = new ArrayList<>();
-                                animalNames.add("Horse");
-                                animalNames.add("Cow");
-                                animalNames.add("Camel");
-                                animalNames.add("Sheep");
-                                animalNames.add("Goat");
 
                                 // set up the RecyclerView
                                 RecyclerView recyclerView = findViewById(R.id.rv_feed);
                                 recyclerView.setLayoutManager(new LinearLayoutManager(HomeActivity.this));
-                                adapter = new MyRecyclerViewAdapter(HomeActivity.this, animalNames);
+                                adapter = new MyRecyclerViewAdapter(HomeActivity.this, myLocations);
                                 adapter.setClickListener(HomeActivity.this);
                                 recyclerView.setAdapter(adapter);
+                                DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), 1);
+                                recyclerView.addItemDecoration(dividerItemDecoration);
+
+
 
 
 

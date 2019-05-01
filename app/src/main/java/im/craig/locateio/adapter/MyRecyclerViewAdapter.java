@@ -1,6 +1,7 @@
 package im.craig.locateio.adapter;
 
 import android.content.Context;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,9 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     private List<String> mData;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
+
+
+
 
     // data is passed into the constructor
     public MyRecyclerViewAdapter(Context context, List<String> data) {
@@ -33,8 +37,15 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     // binds the data to the TextView in each row
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        String animal = mData.get(position);
-        holder.myTextView.setText(animal);
+        String location = mData.get(position);
+        holder.mTv_title.setText(location);
+        holder.mTv_description.setText(location);
+        holder.mTv_extraInfo.setText(location);
+        holder.mTv_username.setText(location);
+        holder.mTv_lat.setText(location);
+        holder.mTv_lng.setText(location);
+        holder.mTv_posted.setText(location);
+        holder.mTv_rating.setText(location);
     }
 
     // total number of rows
@@ -46,12 +57,30 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView myTextView;
+        TextView mTv_title;
+        TextView mTv_description;
+        TextView mTv_extraInfo;
+        TextView mTv_username;
+        TextView mTv_lat;
+        TextView mTv_lng;
+        TextView mTv_posted;
+        TextView mTv_rating;
+
+
 
         ViewHolder(View itemView) {
             super(itemView);
-            myTextView = itemView.findViewById(R.id.tv_title);
+            mTv_title = itemView.findViewById(R.id.tv_title);
+            mTv_description = itemView.findViewById(R.id.tv_description);
+
+            mTv_extraInfo = itemView.findViewById(R.id.tv_extraInfo);
+            mTv_username= itemView.findViewById(R.id.tv_username);
+            mTv_lat = itemView.findViewById(R.id.tv_lat);
+            mTv_lng = itemView.findViewById(R.id.tv_lng);
+            mTv_posted = itemView.findViewById(R.id.tv_posted);
+            mTv_rating = itemView.findViewById(R.id.tv_rating);
             itemView.setOnClickListener(this);
+
         }
 
         @Override
@@ -63,6 +92,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     // convenience method for getting data at click position
     public String getItem(int id) {
         return mData.get(id);
+
     }
 
     // allows clicks events to be caught
