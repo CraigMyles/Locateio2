@@ -334,9 +334,6 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
                                 }
                             }
 
-
-
-
                         }
                     });
 
@@ -348,9 +345,6 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
                     if(tv2 == null)
                         tv2 = (TextView)findViewById(R.id.latitudeValue);
                     tv2.setText(Double.toString(globalLat));
-
-
-
 
                     //if on middle screen (Feed)
                 }if(position == 1){
@@ -373,7 +367,6 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
 
             @Override
             public void onPageScrollStateChanged(int state) {
-
             }
         });
     }
