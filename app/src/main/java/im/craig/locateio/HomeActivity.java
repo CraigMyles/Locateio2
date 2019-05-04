@@ -36,9 +36,11 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
@@ -97,19 +99,30 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
 
     Location mLastLocation;
 
-    private static MapView mapView;
-    private GoogleMap gmap;
-    private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
+    private GoogleMap mMap;
 
+    private static MapView mapView;
+    private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
+//        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+//                .findFragmentById(R.id.map);
+//        mapFragment.getMapAsync(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+//        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+//                .findFragmentById(R.id.map);
+//        mapFragment.getMapAsync(this);
 
         //get session
         session = new SessionHandler(getApplicationContext());
         final User user = session.getUserDetails();
+
+//        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+//                .findFragmentById(R.id.map);
+//        mapFragment.getMapAsync(this);
 
         final View background = findViewById(R.id.home_background_view);
         final ViewPager viewPager = (ViewPager) findViewById(R.id.home_view_pager);
@@ -120,9 +133,21 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
         final int colourPink = ContextCompat.getColor(this, R.color.Pink);
         final int colourBlue = ContextCompat.getColor(this, R.color.CafeSeaBlue);
 
+
+//        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+//                .findFragmentById(R.id.map);
+//        mapFragment.getMapAsync(this);
+
+
         TabLayout tabLayout = (TabLayout) findViewById(R.id.am_tab_layout);
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
         tabLayout.setupWithViewPager(viewPager);
+
+//        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+//                .findFragmentById(R.id.map);
+//        mapFragment.getMapAsync(this);
+
+
 
         //call method to load the data to the feed
         loadLocations();
@@ -130,6 +155,16 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
 
         //set screen to view fragment 1 (centre)
         viewPager.setCurrentItem(1);
+
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+
+        if(mapFragment == null)
+            //mapFragment.onCreate(null);
+            //mapFragment.onResume();
+            //mapFragment.getMapAsync(this);
+
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -356,11 +391,16 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
                         public void onClick(View v) {
 
                             //when reload icon is pressed, reload data
-                            Toast.makeText(HomeActivity.this, "RELOADING STUFF", Toast.LENGTH_LONG).show();
                             loadLocations();
                         }
                     });
 
+                }if(position ==2){
+//                    GoogleMap mMap;
+//
+//                    SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+//                            .findFragmentById(R.id.map);
+//                    mapFragment.getMapAsync(HomeActivity.this);
                 }
 
             }
@@ -428,6 +468,7 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
 
                     }
                 });
+
 
         // access singleton's request queue method
         MySingleton.getInstance(this).addToRequestQueue(jsArrayRequest);
@@ -542,10 +583,14 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     @Override
-    public void onMapReady(GoogleMap map) {
-        gmap.addMarker(new MarkerOptions()
-                .position(new LatLng(10, 10))
-                .title("Hello world"));
+    public void onMapReady(GoogleMap googleMap) {
+        GoogleMap mMap;
+        mMap = googleMap;
+
+        // Add a marker in Sydney and move the camera
+        LatLng sydney = new LatLng(-34, 151);
+        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
     void refreshItems() {

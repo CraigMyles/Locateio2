@@ -20,6 +20,8 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback {
     public static MapFragment create(){
         return new MapFragment();
     }
+
+
     @Override
     public int getLayoutResId() {
         return R.layout.fragment_map;
