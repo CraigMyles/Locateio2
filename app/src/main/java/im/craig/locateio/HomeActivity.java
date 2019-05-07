@@ -10,6 +10,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -68,7 +69,7 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
     Double globalLong;
     Double globalLat;
 
-    SwipeRefreshLayout mSwipeRefreshLayout;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     private String shareLocation_api_url = "https://craig.im/locateio/shareLocation.php";
     private String loadLocations_api_url = "https://craig.im/locateio/loadLocations.php";
@@ -140,7 +141,7 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.am_tab_layout);
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
+//        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
         tabLayout.setupWithViewPager(viewPager);
 
 //        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -157,13 +158,31 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
         viewPager.setCurrentItem(1);
 
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-
-        if(mapFragment == null)
+//        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+//                .findFragmentById(R.id.map);
+//
+//        if(mapFragment == null)
             //mapFragment.onCreate(null);
             //mapFragment.onResume();
             //mapFragment.getMapAsync(this);
+
+
+//        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//
+//                //  wait for 3 seconds to update
+//                new Handler().postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        // cancle the Visual indication of a refresh
+//                        mSwipeRefreshLayout.setRefreshing(false);
+//                        //reload data
+//                        loadLocations();
+//                    }
+//                }, 3000);
+//            }
+//        });
 
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -300,14 +319,6 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
                                     request.put(KEY_EXTRAINFO, extraLocationInfo);
                                     request.put(KEY_RATING, rating);
 
-                                    Log.d("sadness", "username: " + username);
-                                    Log.d("sadness", "title: " + locationTitle);
-                                    Log.d("sadness", "description: " + locationDesc);
-                                    Log.d("sadness", "extraInfo: " + extraLocationInfo);
-                                    Log.d("sadness", "lat: " + stringLatitude);
-                                    Log.d("sadness", "lng: " + stringLongitude);
-                                    Log.d("sadness", "rating: " + rating);
-
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -401,6 +412,10 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
 //                    SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
 //                            .findFragmentById(R.id.map);
 //                    mapFragment.getMapAsync(HomeActivity.this);
+                    SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                            .findFragmentById(R.id.map);
+
+
                 }
 
             }
@@ -445,6 +460,25 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
                                 recyclerView.setAdapter(adapter);
                                 DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), 1);
                                 recyclerView.addItemDecoration(dividerItemDecoration);
+
+                                mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
+                                mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                                    @Override
+                                    public void onRefresh() {
+                                        // Your code here
+                                        Toast.makeText(getApplicationContext(), "Reloading", Toast.LENGTH_LONG).show();
+
+                                        // Stop animation after 4 seconds
+                                        new Handler().postDelayed(new Runnable() {
+                                            @Override public void run() {
+                                                loadLocations();
+                                                //stop animation
+                                                mSwipeRefreshLayout.setRefreshing(false);
+                                            }
+                                        }, 3000);
+                                    }
+                                });
+
 
 
                             }else{
@@ -584,7 +618,7 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        GoogleMap mMap;
+//        GoogleMap mMap;
         mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
@@ -593,19 +627,19 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
-    void refreshItems() {
-        // Load items
-        loadLocations();
-        // Load complete
-        onItemsLoadComplete();
-    }
-
-    void onItemsLoadComplete() {
-        // Update the adapter and notify data set changed
-        // ...
-
-        // Stop refresh animation
-        mSwipeRefreshLayout.setRefreshing(false);
-    }
+//    void refreshItems() {
+//        // Load items
+//        loadLocations();
+//        // Load complete
+//        onItemsLoadComplete();
+//    }
+//
+//    void onItemsLoadComplete() {
+//        // Update the adapter and notify data set changed
+//        // ...
+//
+//        // Stop refresh animation
+//        mSwipeRefreshLayout.setRefreshing(false);
+//    }
 
 }
