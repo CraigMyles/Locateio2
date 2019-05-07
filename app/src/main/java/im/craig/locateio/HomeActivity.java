@@ -100,9 +100,11 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
 
     Location mLastLocation;
 
-    private GoogleMap mMap;
-
-    private static MapView mapView;
+//    private GoogleMap mMap;
+//
+//    private static MapView mapView;
+    private static MapView mapFragment;
+    private GoogleMap gmap;
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
 
     @Override
@@ -412,8 +414,19 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
 //                    SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
 //                            .findFragmentById(R.id.map);
 //                    mapFragment.getMapAsync(HomeActivity.this);
+                    //private static MapView mapView;
+
                     SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                             .findFragmentById(R.id.map);
+
+                    Toast.makeText(HomeActivity.this, "Position 2", Toast.LENGTH_SHORT).show();
+
+                    //GoogleMap gmap;
+
+
+
+                    onMapReady(gmap);
+
 
 
                 }
@@ -617,14 +630,24 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
-//        GoogleMap mMap;
-        mMap = googleMap;
+    public void onMapReady(GoogleMap map) {
+        //mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+//        LatLng sydney = new LatLng(-34, 151);
+//        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
+        //Toast.makeText(this, "some toast", Toast.LENGTH_SHORT).show();
+
+        //mMap.setMapStyle()
+//        gmap=map;
+//
+//        gmap.addMarker(new MarkerOptions()
+//                .position(new LatLng(10, 10))
+//                .title("Hello world"));
+
+        //gmap.clear();
     }
 
 //    void refreshItems() {
