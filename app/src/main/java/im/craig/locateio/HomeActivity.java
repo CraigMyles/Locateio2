@@ -586,7 +586,7 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     public void onItemClick(View view, int position) {
-        Toast.makeText(this, "Extra Info: " + adapter.getItem(position), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "This is item number " + adapter.getItem(position), Toast.LENGTH_SHORT).show();
 
     }
 
